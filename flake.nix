@@ -1,20 +1,14 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable-small";
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel";
+    nix-cachyos-kernel = {
+      url = "github:xddxdd/nix-cachyos-kernel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, nix-cachyos-kernel, ... }: let
-    system = "x86_64-linux";
-
-    pkgs = import nixpkgs {
-      inherit system;
-      overlays = [
-        nix-cachyos-kernel.overlays.default
-      ];
-    };
-  in {
-    checks.${system} = {
+  outputs = { nix-cachyos-kernel, ... }: 
+    checks."x86_64-linux" = {
       inherit (pkgs.cachyosKernels.linuxPackages-cachyos-latest) kernel;
     };
   };
